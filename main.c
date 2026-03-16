@@ -1,26 +1,50 @@
 #include "main.h"
+#include "buttons.h"
+#include "ir_tx.h"
 
-// Fonction principale
 int main(void)
 {
-    // Initialisation HAL et horloge
-    HAL_Init();
-    SystemClock_Config();
 
-    // Initialisation GPIO
-    MX_GPIO_Init();
+    HAL_Init();              // initialise la bibliothèque HAL
+    SystemClock_Config();    // configure l'horloge du microcontrôleur
 
-    // Boucle principale
-    while (1)
+    Buttons_Init();          // initialise les boutons
+    IR_Init();               // initialise l'émetteur infrarouge
+
+    uint8_t button;          // variable qui stocke le bouton appuyé
+
+
+    while (1)                // boucle infinie du programme
     {
-        // Si bouton B1 appuyé (PC13 = 0)
-        if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13) == GPIO_PIN_RESET)
+
+        button = Buttons_Read();  // lecture des boutons
+
+
+        switch(button)
         {
-            HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET); // Allume IR + LED verte
+
+            case 1:
+                IR_Send(0x01);  // envoie code 1
+                break;
+
+            case 2:
+                IR_Send(0x02);  // envoie code 2
+                break;
+
+            case 3:
+                IR_Send(0x03);  // envoie code 3
+                break;
+
+            case 4:
+                IR_Send(0x04);  // envoie code 4
+                break;
+
+            case 5:
+                IR_Send(0x05);  // envoie code 5
+                break;
+
         }
-        else
-        {
-            HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET); // Éteint IR + LED verte
-        }
+
+        HAL_Delay(200);  // petite pause pour éviter les répétitions trop rapides
     }
 }

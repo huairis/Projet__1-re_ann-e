@@ -1,0 +1,31 @@
+#include "ir.h"
+
+uint32_t ir_code = 0;
+uint8_t ir_received = 0;
+
+static uint8_t bit_index = 0;
+
+void IR_Decode(uint32_t time)
+{
+
+    if(time > 10000)
+    {
+        bit_index = 0;
+        ir_code = 0;
+        return;
+    }
+
+    if(time > 2000)
+    {
+        ir_code |= (1 << bit_index);
+    }
+
+    bit_index++;
+
+    if(bit_index >= 32)
+    {
+        ir_received = 1;
+        bit_index = 0;
+    }
+
+}

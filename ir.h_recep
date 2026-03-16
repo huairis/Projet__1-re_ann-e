@@ -1,0 +1,11 @@
+#ifndef IR_H
+#define IR_H
+
+#include "stm32f1xx_hal.h"
+
+extern uint32_t ir_code;
+extern uint8_t ir_received;
+
+void IR_Decode(uint32_t time);
+
+#endif

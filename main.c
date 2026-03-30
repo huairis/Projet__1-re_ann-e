@@ -1,47 +1,52 @@
 #include "main.h"
-#include "buttons.h"
-#include "ir_tx.h"
+#include "ir_send.h"
+
+extern TIM_HandleTypeDef htim2;
 
 int main(void)
 {
+    HAL_Init();
+    SystemClock_Config();
 
-    HAL_Init();              // initialise la bibliothèque HAL
-    SystemClock_Config();    // configure l'horloge du microcontrôleur
+    MX_GPIO_Init();
+    MX_TIM1_Init();
+    MX_TIM2_Init();
 
-    Buttons_Init();          // initialise les boutons
-    IR_Init();               // initialise l'émetteur infrarouge
+    HAL_TIM_Base_Start(&htim2);
 
-    uint8_t button;          // variable qui stocke le bouton appuyé
-
-
-    while (1)                // boucle infinie du programme
+    while (1)
     {
-
-        button = Buttons_Read();  // lecture des boutons
-
-
-        switch(button)
+        if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)==GPIO_PIN_RESET)
         {
+            IR_SendCommand(0x01); // ON/OFF
+            HAL_Delay(300);
+        }
 
-            case 1:
-                IR_Send(0x01);  // envoie code 1
-                break;
+        if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1)==GPIO_PIN_RESET)
+        {
+            IR_SendCommand(0x02); // Bright +
+            HAL_Delay(200);
+        }
 
-            case 2:
-                IR_Send(0x02);  // envoie code 2
-                break;
+        if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_2)==GPIO_PIN_RESET)
+        {
+            IR_SendCommand(0x03); // Bright -
+            HAL_Delay(200);
+        }
 
-            case 3:
-                IR_Send(0x03);  // envoie code 3
-                break;
+        if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_3)==GPIO_PIN_RESET)
+        {
+            IR_SendCommand(0x04); // Color
+            HAL_Delay(300);
+        }
 
-            case 4:
-                IR_Send(0x04);  // envoie code 4
-                break;
-
-            case 5:
-                IR_Send(0x05);  // envoie code 5
-                break;
+        if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_4)==GPIO_PIN_RESET)
+        {
+            IR_SendCommand(0x05); // Mode
+            HAL_Delay(300);
+        }
+    }
+}
 
         }
 
